@@ -18,7 +18,7 @@ import java.util.List;
 
 public class CsvUtil {
 
-    public static String TYPE = "text/csv";
+    public static String TYPE = "application/vnd.ms-excel";
     public static boolean isCsvFormat(MultipartFile file) {
 
         if (!TYPE.equals(file.getContentType())) {
@@ -28,18 +28,16 @@ public class CsvUtil {
     }
 
     public static List<User> csvToUsers(InputStream is) {
-
         try(BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             CSVParser csvParser = new CSVParser(bufferedReader,
-                    CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
-
+                    CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim().withDelimiter(';'))) {
             List<User> users = new ArrayList<>();
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             for (CSVRecord csvRecord : csvRecords) {
                 User newUser = new User(
                         csvRecord.get("Ime"),
                         csvRecord.get("Prezime"),
-                        StringToDate(csvRecord.get("Datum"))
+                        StringToDate(csvRecord.get("DatumRodjenja"))
                 );
                 users.add(newUser);
             }
