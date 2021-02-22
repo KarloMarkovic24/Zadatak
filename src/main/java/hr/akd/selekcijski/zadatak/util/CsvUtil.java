@@ -1,6 +1,7 @@
 package hr.akd.selekcijski.zadatak.util;
 
 import hr.akd.selekcijski.zadatak.entity.User;
+import hr.akd.selekcijski.zadatak.exceptions.BadRequestException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -34,17 +35,19 @@ public class CsvUtil {
             List<User> users = new ArrayList<>();
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             for (CSVRecord csvRecord : csvRecords) {
-                User newUser = new User(
-                        csvRecord.get("Ime"),
-                        csvRecord.get("Prezime"),
-                        StringToDate(csvRecord.get("DatumRodjenja"))
-                );
-                users.add(newUser);
+                    User newUser = new User(
+                            csvRecord.get("Ime"),
+                            csvRecord.get("Prezime"),
+                            StringToDate(csvRecord.get("DatumRodjenja"))
+                    );
+                    users.add(newUser);
             }
             return users;
 
-        }catch (IOException | ParseException e) {
-            throw new RuntimeException(e.getMessage());
+        }catch (ParseException e){
+            throw new BadRequestException("Fail to parse csv file: wrong date format");
+        }catch (Exception e) {
+            throw new BadRequestException("Fail to parse csv file");
         }
     }
 

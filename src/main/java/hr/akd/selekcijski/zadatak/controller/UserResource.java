@@ -1,16 +1,14 @@
 package hr.akd.selekcijski.zadatak.controller;
 
-import hr.akd.selekcijski.zadatak.entity.User;
+import hr.akd.selekcijski.zadatak.exceptions.BadRequestException;
 import hr.akd.selekcijski.zadatak.service.UserService;
 import hr.akd.selekcijski.zadatak.util.CsvUtil;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.logging.Logger;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
@@ -24,10 +22,11 @@ public class UserResource {
     @PostMapping("/csv-to-user")
     public ResponseEntity<Object> uploadFile(@RequestParam("file")MultipartFile file) {
 
-        if(CsvUtil.isCsvFormat(file)) {
-            userService.saveFromCsv(file);
-            return ResponseEntity.status(HttpStatus.OK).build();
+        if(!CsvUtil.isCsvFormat(file)) {
+            throw new BadRequestException("Wrong file format !");
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        userService.saveFromCsv(file);
+        return ResponseEntity.ok().build();
     }
 }
